@@ -452,7 +452,7 @@ Deploys a Todo Application to the Minikube cluster. This task applies the Kubern
 Unfortunetly, some tasks were commented out in the playbook. These tasks pertain to enabling the Ingress addon in Minikube, creating a namespace, and asserting the namespace creation. The Ingress addon task works as expected, but i disabled it, so that I can fully understand it's use.
 
 
-**TASKS**: All the ansible playbook tasks work as expected except for the last task and the most important one **18. Deploy Todo Application:**. One of the problems of this task, whithout getting into to many details, is that the Kubernetes Api call defaults to port 80, when it should in fact default to 8443, maybe there is a problem that I am not seeing in the implementation.
+**TASKS**: All the ansible playbook tasks work as expected except for the last task and the most important one **18. Deploy Todo Application:**. One of the problems of this task, whithout getting into too much detail, is that the Kubernetes Api call defaults to port 80, when it should in fact default to 8443, maybe there is a problem that I am not seeing in the implementation.
 I will keep debuging until I find a solution.
 
 
