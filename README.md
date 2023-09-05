@@ -217,7 +217,12 @@ Remember to map the domain (todo.local) to the appropriate IP address in your en
 
 Now let's break down the Ansible Playbook
 
-This Ansible playbook sets up Minikube, Docker, and deploys a Todo Application on a VM. The detailed breakdown of each task is as follows:
+
+**We are assuming that the target virtual machine only has a basic Linux installation. Packages that are specific to the
+deployment of this application are not already available and must be installed.**
+
+
+This Ansible playbook sets up Minikube, Docker, installs essential libraries/dependencies and deploys a Todo Application on to a target Virtual Machine.
 
 
 **1. Ensure software-properties-common is installed:**
@@ -411,7 +416,6 @@ Deploys a Todo Application to the Minikube cluster. This task applies the Kubern
 ```yml
 - name: Deploy Todo Application
   k8s:
-    host: "http://192.168.49.2:8443"
     kubeconfig: /home/ansible/.kube/config
     src: /home/ansible/deployments-minikube/todo-app.yaml
     namespace: default
