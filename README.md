@@ -5,7 +5,7 @@ https://docs.docker.com/get-started/02_our_app/
 
 Let's break down the configuration files in this repository starting with the deployment files:
 
-Kubernetes Deployment for Todo Application
+Kubernetes Deployment for Todo Application:
 This document outlines the Kubernetes resources used to deploy a Todo Application and its supporting infrastructure.
 
 Overview
