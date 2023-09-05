@@ -1,0 +1,141 @@
+- hosts: todo_vm
+  become: yes
+  tasks:
+    - name: Ensure software-properties-common is installed (for apt-add-repository)
+      apt:
+        name: software-properties-common
+        state: present
+
+    - name: Ensure python3-apt is installed
+      apt:
+        name: python3-apt
+        state: present
+
+    - name: Install python3-pip
+      apt:
+        name: python3-pip
+        state: present
+      become: yes
+
+    - name: Install required Python modules
+      pip:
+        name:
+         - openshift
+         - kubernetes
+        executable: pip3
+      become: yes
+
+    - name: Install Minikube dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - curl
+        state: present
+
+    - name: Add Google's apt key
+      apt_key:
+        url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+        state: present
+
+    - name: Add Kubernetes apt repository
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+
+    - name: Install kubelet kubeadm kubectl
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+
+    - name: Install Docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        url: "https://download.docker.com/linux/ubuntu/gpg"
+        state: present
+
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
+        state: present
+
+    - name: Install Docker CE
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+
+    - name: Ensure Docker is started and enabled at boot
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Minikube
+      get_url:
+        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        dest: /usr/local/bin/minikube
+        mode: '0755'
+
+    - name: Add user to docker group
+      user:
+        name: vmuser
+        groups: docker
+        append: yes
+      become: yes
+
+    - name: Start Minikube
+      command: minikube start --driver=docker
+      become: no
+      become_user: vmuser
+    
+      #  - name: Enable Ingress Addon in Minikube
+      #command: minikube addons enable ingress
+      #become: no
+      
+      #- name: Pause for 60 seconds to ensure ingress controller is ready
+      #pause:
+      #  seconds: 60
+  
+      #- name: Create Namespace 'development'
+      #k8s:
+      #  state: present
+      #  definition:
+      #    apiVersion: v1
+      #    kind: Namespace
+      #    metadata:
+      #      name: development
+      # register: namespace_result
+
+      #- name: Assert Namespace Creation
+      #assert:
+      #  that:
+      #    - "namespace_result is defined"
+      #    - "namespace_result is changed"
+      #  fail_msg: "Failed to create namespace 'my-namespace'"
+      #  success_msg: "Successfully created namespace 'my-namespace'"
+
+    - name: Deploy Todo Application
+      k8s:
+        kubeconfig: /home/ansible/.kube/config
+        src: /home/ansible/deployments-minikube/todo-app.yaml
+        namespace: default
+        apply: yes
+      
