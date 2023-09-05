@@ -223,7 +223,7 @@ Now let's break down the Ansible Playbook
 deployment of this application are not already available and must be installed.**
 
 
-**Note**: We must check if the target VM has an ansible user configured. If not, we must configure it and create a SSH key so that we can communicate with our Control Node passwordless.
+**NOTE**: We must check if the target VM has an ansible user configured. If not, we must configure it and create a SSH key so that we can communicate with our Control Node passwordless.
 
 
 ```bash
