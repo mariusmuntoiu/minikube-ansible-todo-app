@@ -55,6 +55,7 @@ spec:
 
 **redis-pvc**
 
+
 This is a PersistentVolumeClaim (PVC) that requests storage from the redis-pv PersistentVolume.
 
 Usage: The PVC is used by the Redis deployment to mount the storage provided by the PV.
@@ -73,11 +74,17 @@ spec:
 ```
 
 **Deployments:**
+
+
 **Redis Deployment**
+
 
 Deploys a single replica of the redis:alpine image. This Redis instance uses the storage provisioned by the redis-pvc.
 
+
 **Key Configurations:**
+
+
 Volume Mount: The Redis container mounts the PVC at /data, which is typically where Redis stores its data.
 
 ```yaml
@@ -94,9 +101,14 @@ spec:
 ```
 
 **Todo-app Deployment**
+
+
 Deploys a single replica of the mmarius19/getting-started:latest image. This is the Todo web application.
 
+
 **Key Configurations:**
+
+
 Environment Variables: Configures the application to connect to the Redis service using the hostname redis on port 6379.
 
 ```yaml
@@ -114,7 +126,11 @@ spec:
 ```
 
 **Services**
+
+
 **Redis Service**
+
+
 A ClusterIP service (default type) that provides internal connectivity to the Redis deployment within the Kubernetes cluster.
 
 ```yaml
@@ -125,7 +141,11 @@ spec:
   ports:
     - port: 6379
 ```
+
+
 **Todo-app Service**
+
+
 A LoadBalancer service that provides external connectivity to the Todo web application. This means it will also provision a cloud load balancer when deployed on cloud providers that support this service type.
 
 ```yaml
