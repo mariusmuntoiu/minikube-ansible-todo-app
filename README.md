@@ -222,6 +222,28 @@ Now let's break down the Ansible Playbook
 deployment of this application are not already available and must be installed.**
 
 
+**Note**: We must check if the target VM has an ansible user configured. If not, we must configure it and create a SSH key so that we can communicate with our Control Node passwordless.
+
+
+```bash
+#For Ubuntu
+sudo useradd ansible
+sudo usermod -aG sudo ansible
+#create a .ssh directory for the ansible user
+cd /home/ansible/
+mkdir .ssh
+cd .ssh
+ssh-keygen
+```
+
+On our Control Node use ssh-copy-id to copy the key from the worker node.
+
+```bash
+
+ssh-copy-id ansible@worker_node_IP
+
+```
+
 This Ansible playbook sets up Minikube, Docker, installs essential libraries/dependencies and deploys a Todo Application on to a target Virtual Machine.
 
 
@@ -390,7 +412,7 @@ Downloads and installs the Minikube binary, which is used to run a single-node K
 ```
 
 **16. Add user to docker group:**
-This gives the user dockervm permissions to run Docker commands without sudo.
+This gives the user vmuser permissions to run Docker commands without sudo.
 
 ```yml
 - name: Add user to docker group
@@ -422,6 +444,19 @@ Deploys a Todo Application to the Minikube cluster. This task applies the Kubern
     apply: yes
 ```
 
- Some tasks were commented out in the playbook. These tasks pertain to enabling the Ingress addon in Minikube, creating a namespace, and asserting the namespace creation. 
+ 
+
+**STATUS/TODO:**
+
+
+Unfortunetly, some tasks were commented out in the playbook. These tasks pertain to enabling the Ingress addon in Minikube, creating a namespace, and asserting the namespace creation. The Ingress addon task works as expected, but i disabled it, so that I can fully understand it's use.
+
+
+**TASKS**: All the ansible playbook tasks work as expected except for the last task and the most important one **18. Deploy Todo Application:**. One of the problems of this task, whithout getting into to many details, is that the Kubernetes Api call defaults to port 80, when it should in fact default to 8443, maybe there is a problem that I am not seeing in the implementation.
+I will keep debuging until I find a solution.
+
+
+Meanwhile, please feel free to review my implementation or to point out the causes that may lead to the Deploy Todo Application task to fail.
+
 
 
