@@ -14,7 +14,10 @@ This document outlines the Kubernetes resources used to deploy a Todo Applicatio
 The application consists of two main components:
 
 **Redis** - An in-memory data structure store, used as a database, cache, and message broker.
+
 **Todo-app** - A web application to manage todos which communicates with Redis for data storage.
+
+
 The Kubernetes resources utilized to deploy these components are:
 
 **PersistentVolume (PV) & PersistentVolumeClaim (PVC)**
