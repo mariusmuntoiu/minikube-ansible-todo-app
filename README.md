@@ -6,6 +6,7 @@ https://docs.docker.com/get-started/02_our_app/
 Let's break down the configuration files in this repository starting with the deployment files:
 
 Kubernetes Deployment for Todo Application:
+
 This document outlines the Kubernetes resources used to deploy a Todo Application and its supporting infrastructure.
 
 Overview
@@ -148,5 +149,9 @@ spec:
                   number: 3000
 ```
 Conclusion:
+
 This setup ensures data persistence for Redis, scalable deployment for the web application, internal communication via services, and external access via a LoadBalancer and Ingress. 
 Remember to map the domain (todo.local) to the appropriate IP address in your environment (e.g., /etc/hosts or DNS) for external access.
+
+
+
