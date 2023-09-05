@@ -209,7 +209,8 @@ spec:
                   number: 3000
 ```
 
-**Conclusion:**
+**NOTE:**
+I've divided the main deployment file **to-do-app-full-deploy.yaml** for better readability in order to not overpopulate the Ansible Playbook with tasks for kubectl apply on every yaml file.
 
 
 This setup ensures data persistence for Redis, scalable deployment for the web application, internal communication via services, and external access via a LoadBalancer and Ingress. 
