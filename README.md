@@ -12,12 +12,12 @@ This document outlines the Kubernetes resources used to deploy a Todo Applicatio
 **Overview**
 
 
-
 The application consists of two main components:
 
-**Redis** - An in-memory data structure store, used as a database, cache, and message broker.<br />
 
-**Todo-app** - A web application to manage todos which communicates with Redis for data storage.<br />
+**Redis** - An in-memory data structure store, used as a database, cache, and message broker.
+
+**Todo-app** - A web application to manage todos which communicates with Redis for data storage.
 
 
 
@@ -25,10 +25,18 @@ The application consists of two main components:
 
 The Kubernetes resources utilized to deploy these components are:
 
+
 **PersistentVolume (PV) & PersistentVolumeClaim (PVC)**
+
+
 **Deployments**
+
+
 **Services**
+
+
 **Ingress**
+
 
 **PersistentVolume (PV) & PersistentVolumeClaim (PVC)**
 
@@ -157,11 +165,19 @@ spec:
   ports:
     - port: 3000
 ```
+
+
 **Ingress**
+
+
 **todo-ingress**
+
+
 An Ingress resource that provides HTTP routing to the Todo web application. It allows external users to access the app using the hostname todo.local.
 
+
 **Key Configurations:**
+
 
 Path: The ingress routes traffic for the path / to the todo-app service on port 3000.
 Rewrite Target Annotation: All requests are rewritten to / irrespective of the original path. This might be useful if the application expects all requests to hit the root path.
@@ -183,7 +199,9 @@ spec:
                 port:
                   number: 3000
 ```
+
 **Conclusion:**
+
 
 This setup ensures data persistence for Redis, scalable deployment for the web application, internal communication via services, and external access via a LoadBalancer and Ingress. 
 Remember to map the domain (todo.local) to the appropriate IP address in your environment (e.g., /etc/hosts or DNS) for external access.
