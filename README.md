@@ -5,24 +5,24 @@ https://docs.docker.com/get-started/02_our_app/
 
 Let's break down the configuration files in this repository starting with the deployment files:
 
-Kubernetes Deployment for Todo Application:
+**Kubernetes Deployment for Todo Application:**
 
 This document outlines the Kubernetes resources used to deploy a Todo Application and its supporting infrastructure.
 
-Overview
+**Overview**
 The application consists of two main components:
 
-Redis - An in-memory data structure store, used as a database, cache, and message broker.
-Todo-app - A web application to manage todos which communicates with Redis for data storage.
+**Redis** - An in-memory data structure store, used as a database, cache, and message broker.
+**Todo-app** - A web application to manage todos which communicates with Redis for data storage.
 The Kubernetes resources utilized to deploy these components are:
 
-PersistentVolume (PV) & PersistentVolumeClaim (PVC)
-Deployments
-Services
-Ingress
+**PersistentVolume (PV) & PersistentVolumeClaim (PVC)**
+**Deployments**
+**Services**
+**Ingress**
 
-PersistentVolume (PV) & PersistentVolumeClaim (PVC)
-redis-pv
+**PersistentVolume (PV) & PersistentVolumeClaim (PVC)**
+**redis-pv**
 This is a PersistentVolume (PV) that provides 1Gi of storage on the host's filesystem at /mnt/data.
 
 Usage: This PV is used to store data for the Redis database to ensure that data remains intact across container restarts.
@@ -40,7 +40,7 @@ spec:
 
 ```
 
-redis-pvc
+**redis-pvc**
 This is a PersistentVolumeClaim (PVC) that requests storage from the redis-pv PersistentVolume.
 
 Usage: The PVC is used by the Redis deployment to mount the storage provided by the PV.
@@ -58,11 +58,11 @@ spec:
 
 ```
 
-Deployments:
-Redis Deployment
+**Deployments:**
+**Redis Deployment**
 Deploys a single replica of the redis:alpine image. This Redis instance uses the storage provisioned by the redis-pvc.
 
-Key Configurations:
+**Key Configurations:**
 Volume Mount: The Redis container mounts the PVC at /data, which is typically where Redis stores its data.
 
 ```yaml
@@ -78,10 +78,10 @@ spec:
           mountPath: /data
 ```
 
-Todo-app Deployment
+**Todo-app Deployment**
 Deploys a single replica of the mmarius19/getting-started:latest image. This is the Todo web application.
 
-Key Configurations:
+**Key Configurations:**
 Environment Variables: Configures the application to connect to the Redis service using the hostname redis on port 6379.
 
 ```yaml
@@ -98,8 +98,8 @@ spec:
           value: "6379"
 ```
 
-Services
-Redis Service
+**Services**
+**Redis Service**
 A ClusterIP service (default type) that provides internal connectivity to the Redis deployment within the Kubernetes cluster.
 
 ```yaml
@@ -110,7 +110,7 @@ spec:
   ports:
     - port: 6379
 ```
-Todo-app Service
+**Todo-app Service**
 A LoadBalancer service that provides external connectivity to the Todo web application. This means it will also provision a cloud load balancer when deployed on cloud providers that support this service type.
 
 ```yaml
@@ -122,11 +122,11 @@ spec:
   ports:
     - port: 3000
 ```
-Ingress
-todo-ingress
+**Ingress**
+**todo-ingress**
 An Ingress resource that provides HTTP routing to the Todo web application. It allows external users to access the app using the hostname todo.local.
 
-Key Configurations:
+**Key Configurations:**
 
 Path: The ingress routes traffic for the path / to the todo-app service on port 3000.
 Rewrite Target Annotation: All requests are rewritten to / irrespective of the original path. This might be useful if the application expects all requests to hit the root path.
@@ -148,7 +148,7 @@ spec:
                 port:
                   number: 3000
 ```
-Conclusion:
+**Conclusion:**
 
 This setup ensures data persistence for Redis, scalable deployment for the web application, internal communication via services, and external access via a LoadBalancer and Ingress. 
 Remember to map the domain (todo.local) to the appropriate IP address in your environment (e.g., /etc/hosts or DNS) for external access.
@@ -158,7 +158,7 @@ Now let's break down the Ansible Playbook
 This Ansible playbook sets up Minikube, Docker, and deploys a Todo Application on a VM. The detailed breakdown of each task is as follows:
 
 
-1. Ensure software-properties-common is installed:
+**1. Ensure software-properties-common is installed:**
 This package is required to add external repositories using the apt-add-repository command.
 
 ```yml
@@ -168,7 +168,7 @@ This package is required to add external repositories using the apt-add-reposito
     state: present
 ```
 
-2. Ensure python3-apt is installed:
+**2. Ensure python3-apt is installed:**
 The package python3-apt provides a high-level interface for the APT library, making it easier to manage packages.
 
 ```yml
@@ -178,7 +178,7 @@ The package python3-apt provides a high-level interface for the APT library, mak
     state: present
 ```
 
-3. Install python3-pip:
+**3. Install python3-pip:**
 Installs the Python3 version of pip, the Python package installer.
 
 ```yml
@@ -188,7 +188,7 @@ Installs the Python3 version of pip, the Python package installer.
     state: present
 ```
 
-4. Install required Python modules:
+**4. Install required Python modules:**
 Installs the Python modules openshift and kubernetes required for Kubernetes operations.
 
 ```yml
@@ -200,7 +200,7 @@ Installs the Python modules openshift and kubernetes required for Kubernetes ope
     executable: pip3
 ```
 
-5. Install Minikube dependencies:
+**5. Install Minikube dependencies:**
 Ensures the installation of packages required by Minikube.
 
 ```yml
@@ -212,7 +212,7 @@ Ensures the installation of packages required by Minikube.
     state: present
 ```
 
-6. Add Google's apt key:
+**6. Add Google's apt key:**
 Adds Google's APT key, a requirement for adding Google's repositories.
 
 ```yml
@@ -221,7 +221,7 @@ Adds Google's APT key, a requirement for adding Google's repositories.
     url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
     state: present
 ```
-7. Add Kubernetes apt repository:
+**7. Add Kubernetes apt repository:**
 Adds the Kubernetes APT repository for installing kubeadm, kubectl, and kubelet.
 
 ```yml
@@ -231,7 +231,7 @@ Adds the Kubernetes APT repository for installing kubeadm, kubectl, and kubelet.
     state: present
 ```
 
-8. Install kubelet, kubeadm, and kubectl:
+**8. Install kubelet, kubeadm, and kubectl:**
 These are Kubernetes components: kubelet (node agent), kubeadm (for cluster management), and kubectl (command line tool).
 
 ```yml
@@ -244,7 +244,7 @@ These are Kubernetes components: kubelet (node agent), kubeadm (for cluster mana
     state: present
 ```
 
-9. Install Docker dependencies:
+**9. Install Docker dependencies:**
 Ensures the installation of packages required by Docker.
 
 ```yml
@@ -258,7 +258,7 @@ Ensures the installation of packages required by Docker.
     state: present
 ```
 
-10. Update APT cache:
+**10. Update APT cache:**
 Refreshes the local package database, ensuring the latest package information is used.
 
 ```yml
@@ -267,7 +267,7 @@ Refreshes the local package database, ensuring the latest package information is
     update_cache: yes
 ```
 
-11. Add Docker's official GPG key:
+**11. Add Docker's official GPG key:**
 Adds Docker's official GPG key, which ensures the packages installed from Docker's repository are authenticated.
 
 ```yml
@@ -277,7 +277,7 @@ Adds Docker's official GPG key, which ensures the packages installed from Docker
     state: present
 ```
 
-12. Add Docker repository:
+**12. Add Docker repository:**
 This task adds Docker's official repository, which provides the latest versions of Docker.
 
 ```yml
@@ -287,7 +287,7 @@ This task adds Docker's official repository, which provides the latest versions 
     state: present
 ```
 
-13. Install Docker CE:
+**13. Install Docker CE:**
 Installs the Docker Community Edition along with its CLI and the containerd runtime.
 
 ```yml
@@ -300,7 +300,7 @@ Installs the Docker Community Edition along with its CLI and the containerd runt
     state: present
 ```
 
-14. Ensure Docker is started and enabled at boot:
+**14. Ensure Docker is started and enabled at boot:**
 Makes sure the Docker service is running and set to start on system boot.
 
 ```yml
@@ -311,7 +311,7 @@ Makes sure the Docker service is running and set to start on system boot.
     enabled: yes
 ```
 
-15. Install Minikube:
+**15. Install Minikube:**
 Downloads and installs the Minikube binary, which is used to run a single-node Kubernetes cluster.
 
 ```yml
@@ -322,7 +322,7 @@ Downloads and installs the Minikube binary, which is used to run a single-node K
     mode: '0755'
 ```
 
-16. Add user to docker group:
+**16. Add user to docker group:**
 This gives the user dockervm permissions to run Docker commands without sudo.
 
 ```yml
@@ -333,7 +333,7 @@ This gives the user dockervm permissions to run Docker commands without sudo.
     append: yes
 ```
 
-17. Start Minikube:
+**17. Start Minikube:**
 Starts a Minikube cluster using the Docker driver. The command is run as the dockervm user.
 
 ```yml
@@ -343,7 +343,7 @@ Starts a Minikube cluster using the Docker driver. The command is run as the doc
   become_user: dockervm
 ```
 
-18. Deploy Todo Application:
+**18. Deploy Todo Application:**
 Deploys a Todo Application to the Minikube cluster. This task applies the Kubernetes manifest located at /home/ansible/deployments-minikube/todo-app.yaml.
 
 ```yml
