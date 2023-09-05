@@ -10,6 +10,7 @@ Let's break down the configuration files in this repository starting with the de
 This document outlines the Kubernetes resources used to deploy a Todo Application and its supporting infrastructure.
 
 **Overview**
+
 The application consists of two main components:
 
 **Redis** - An in-memory data structure store, used as a database, cache, and message broker.
@@ -41,6 +42,7 @@ spec:
 ```
 
 **redis-pvc**
+
 This is a PersistentVolumeClaim (PVC) that requests storage from the redis-pv PersistentVolume.
 
 Usage: The PVC is used by the Redis deployment to mount the storage provided by the PV.
@@ -60,6 +62,7 @@ spec:
 
 **Deployments:**
 **Redis Deployment**
+
 Deploys a single replica of the redis:alpine image. This Redis instance uses the storage provisioned by the redis-pvc.
 
 **Key Configurations:**
