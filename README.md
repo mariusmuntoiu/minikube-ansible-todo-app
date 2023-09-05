@@ -38,7 +38,8 @@ The Kubernetes resources utilized to deploy these components are:
 **Ingress**
 
 
-I will try to breakdown each one:
+I will try to breakdown each one starting with:
+
 
 
 **PersistentVolume (PV) & PersistentVolumeClaim (PVC)**
