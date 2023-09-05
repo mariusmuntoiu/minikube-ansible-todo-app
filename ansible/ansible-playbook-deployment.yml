@@ -106,6 +106,8 @@
       become: no
       become_user: vmuser
     
+
+#Commented conifugrations do not work for the time being - problems/debug
       #  - name: Enable Ingress Addon in Minikube
       #command: minikube addons enable ingress
       #become: no
@@ -135,7 +137,7 @@
     - name: Deploy Todo Application
       k8s:
         kubeconfig: /home/ansible/.kube/config
-        src: /home/ansible/deployments-minikube/todo-app.yaml
+        src: /home/ansible/deployments-minikube/todo-app-full-deploy.yaml
         namespace: default
         apply: yes
       
