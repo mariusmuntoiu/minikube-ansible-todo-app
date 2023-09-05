@@ -32,7 +32,9 @@ The Kubernetes resources utilized to deploy these components are:
 
 **PersistentVolume (PV) & PersistentVolumeClaim (PVC)**
 
+
 **redis-pv**
+
 
 This is a PersistentVolume (PV) that provides 1Gi of storage on the host's filesystem at /mnt/data.
 
