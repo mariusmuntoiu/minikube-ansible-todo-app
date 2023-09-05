@@ -153,5 +153,18 @@ Conclusion:
 This setup ensures data persistence for Redis, scalable deployment for the web application, internal communication via services, and external access via a LoadBalancer and Ingress. 
 Remember to map the domain (todo.local) to the appropriate IP address in your environment (e.g., /etc/hosts or DNS) for external access.
 
+Now let's break down the Ansible Playbook
 
+This Ansible playbook sets up Minikube, Docker, and deploys a Todo Application on a VM. The detailed breakdown of each task is as follows:
+
+
+1. Ensure software-properties-common is installed:
+This package is required to add external repositories using the apt-add-repository command.
+
+```yml
+- name: Ensure software-properties-common is installed (for apt-add-repository)
+  apt:
+    name: software-properties-common
+    state: present
+```
 
