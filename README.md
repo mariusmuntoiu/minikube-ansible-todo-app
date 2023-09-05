@@ -31,7 +31,9 @@ The Kubernetes resources utilized to deploy these components are:
 **Ingress**
 
 **PersistentVolume (PV) & PersistentVolumeClaim (PVC)**
+
 **redis-pv**
+
 This is a PersistentVolume (PV) that provides 1Gi of storage on the host's filesystem at /mnt/data.
 
 Usage: This PV is used to store data for the Redis database to ensure that data remains intact across container restarts.
