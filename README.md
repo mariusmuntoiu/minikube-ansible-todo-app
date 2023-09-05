@@ -168,3 +168,194 @@ This package is required to add external repositories using the apt-add-reposito
     state: present
 ```
 
+2. Ensure python3-apt is installed:
+The package python3-apt provides a high-level interface for the APT library, making it easier to manage packages.
+
+```yml
+- name: Ensure python3-apt is installed
+  apt:
+    name: python3-apt
+    state: present
+```
+
+3. Install python3-pip:
+Installs the Python3 version of pip, the Python package installer.
+
+```yml
+- name: Install python3-pip
+  apt:
+    name: python3-pip
+    state: present
+```
+
+4. Install required Python modules:
+Installs the Python modules openshift and kubernetes required for Kubernetes operations.
+
+```yml
+- name: Install required Python modules
+  pip:
+    name:
+     - openshift
+     - kubernetes
+    executable: pip3
+```
+
+5. Install Minikube dependencies:
+Ensures the installation of packages required by Minikube.
+
+```yml
+- name: Install Minikube dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - curl
+    state: present
+```
+
+6. Add Google's apt key:
+Adds Google's APT key, a requirement for adding Google's repositories.
+
+```yml
+- name: Add Google's apt key
+  apt_key:
+    url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+    state: present
+```
+7. Add Kubernetes apt repository:
+Adds the Kubernetes APT repository for installing kubeadm, kubectl, and kubelet.
+
+```yml
+- name: Add Kubernetes apt repository
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+```
+
+8. Install kubelet, kubeadm, and kubectl:
+These are Kubernetes components: kubelet (node agent), kubeadm (for cluster management), and kubectl (command line tool).
+
+```yml
+- name: Install kubelet kubeadm kubectl
+  apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+```
+
+9. Install Docker dependencies:
+Ensures the installation of packages required by Docker.
+
+```yml
+- name: Install Docker dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+    state: present
+```
+
+10. Update APT cache:
+Refreshes the local package database, ensuring the latest package information is used.
+
+```yml
+- name: Update APT cache
+  apt:
+    update_cache: yes
+```
+
+11. Add Docker's official GPG key:
+Adds Docker's official GPG key, which ensures the packages installed from Docker's repository are authenticated.
+
+```yml
+- name: Add Docker's official GPG key
+  apt_key:
+    url: "https://download.docker.com/linux/ubuntu/gpg"
+    state: present
+```
+
+12. Add Docker repository:
+This task adds Docker's official repository, which provides the latest versions of Docker.
+
+```yml
+- name: Add Docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+    state: present
+```
+
+13. Install Docker CE:
+Installs the Docker Community Edition along with its CLI and the containerd runtime.
+
+```yml
+- name: Install Docker CE
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+```
+
+14. Ensure Docker is started and enabled at boot:
+Makes sure the Docker service is running and set to start on system boot.
+
+```yml
+- name: Ensure Docker is started and enabled at boot
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+```
+
+15. Install Minikube:
+Downloads and installs the Minikube binary, which is used to run a single-node Kubernetes cluster.
+
+```yml
+- name: Install Minikube
+  get_url:
+    url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    dest: /usr/local/bin/minikube
+    mode: '0755'
+```
+
+16. Add user to docker group:
+This gives the user dockervm permissions to run Docker commands without sudo.
+
+```yml
+- name: Add user to docker group
+  user:
+    name: dockervm
+    groups: docker
+    append: yes
+```
+
+17. Start Minikube:
+Starts a Minikube cluster using the Docker driver. The command is run as the dockervm user.
+
+```yml
+- name: Start Minikube
+  command: minikube start --driver=docker
+  become: no
+  become_user: dockervm
+```
+
+18. Deploy Todo Application:
+Deploys a Todo Application to the Minikube cluster. This task applies the Kubernetes manifest located at /home/ansible/deployments-minikube/todo-app.yaml.
+
+```yml
+- name: Deploy Todo Application
+  k8s:
+    host: "http://192.168.49.2:8443"
+    kubeconfig: /home/ansible/.kube/config
+    src: /home/ansible/deployments-minikube/todo-app.yaml
+    namespace: default
+    apply: yes
+```
+
+ Some tasks were commented out in the playbook. These tasks pertain to enabling the Ingress addon in Minikube, creating a namespace, and asserting the namespace creation. 
+
+
