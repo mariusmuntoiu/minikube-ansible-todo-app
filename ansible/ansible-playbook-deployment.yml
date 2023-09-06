@@ -117,9 +117,9 @@
         - "https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.0/deploy/static/provider/baremetal/deploy.yaml"
 
       
-      #- name: Pause for 60 seconds to ensure ingress controller is ready
-      #pause:
-      #  seconds: 60
+    - name: Pause for 60 seconds to ensure ingress controller is ready
+      pause:
+        seconds: 60
   
       #- name: Create Namespace 'development'
       #k8s:
