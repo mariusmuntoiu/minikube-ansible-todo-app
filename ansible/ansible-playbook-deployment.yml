@@ -106,9 +106,16 @@
       become: no
       become_user: vmuser
     
-      #  - name: Enable Ingress Addon in Minikube
-      #command: minikube addons enable ingress
-      #become: no
+    - name: Enable Ingress Addon in Minikube
+      command: minikube addons enable ingress
+      become: no
+      
+
+    - name: Deploy nginx-ingress
+      command: kubectl apply -f "{{ item }}"
+      with_items:
+        - "https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.0/deploy/static/provider/baremetal/deploy.yaml"
+
       
       #- name: Pause for 60 seconds to ensure ingress controller is ready
       #pause:
