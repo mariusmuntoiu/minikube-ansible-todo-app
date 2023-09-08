@@ -110,35 +110,54 @@
       command: minikube addons enable ingress
       become: no
       
+    - name: Check if Helm is already installed
+      command: helm version --short
+      register: helm_version
+      failed_when: false
+      changed_when: false
 
-    - name: Deploy nginx-ingress
-      command: kubectl apply -f "{{ item }}"
-      with_items:
-        - "https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.0/deploy/static/provider/baremetal/deploy.yaml"
+    - name: Download Helm binary
+      get_url:
+        url: "https://get.helm.sh/helm-v3.7.0-linux-amd64.tar.gz" 
+        dest: "/tmp/helm-v3.7.0-linux-amd64.tar.gz"
+        mode: '0755'
+      when: helm_version.rc != 0
 
+    - name: Extract Helm tarball
+      unarchive:
+        src: "/tmp/helm-v3.7.0-linux-amd64.tar.gz"
+        dest: "/tmp"
+        remote_src: true
+      when: helm_version.rc != 0
+   
+    - name: Move Helm binary to PATH
+      command: mv /tmp/linux-amd64/helm /usr/local/bin/helm
+      when: helm_version.rc != 0
+
+    - name: Verify Helm Installation
+      command: helm version --short
+      register: post_install_helm_version
+      failed_when: post_install_helm_version.rc != 0
+
+    - name: Ensure Helm repo for nginx-ingress is added
+      command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      register: repo_added
+      changed_when: "'\"ingress-nginx\" has been added to your repositories' in repo_added.stdout"
+
+    - name: Update Helm repo
+      command: helm repo update
+
+    - name: Install nginx-ingress using Helm
+      command: helm install nginx-ingress ingress-nginx/ingress-nginx
+      register: helm_install
+      changed_when: "'NAME: nginx-ingress' in helm_install.stdout"
+      args:
+        creates: /etc/helm/namespace/ingress-nginx # This is a pseudo path. Helm doesn't create file-based indicators for installs.
       
     - name: Pause for 60 seconds to ensure ingress controller is ready
       pause:
         seconds: 60
   
-      #- name: Create Namespace 'development'
-      #k8s:
-      #  state: present
-      #  definition:
-      #    apiVersion: v1
-      #    kind: Namespace
-      #    metadata:
-      #      name: development
-      # register: namespace_result
-
-      #- name: Assert Namespace Creation
-      #assert:
-      #  that:
-      #    - "namespace_result is defined"
-      #    - "namespace_result is changed"
-      #  fail_msg: "Failed to create namespace 'my-namespace'"
-      #  success_msg: "Successfully created namespace 'my-namespace'"
-
     - name: Deploy Todo Application
       k8s:
         kubeconfig: /home/ansible/.kube/config
