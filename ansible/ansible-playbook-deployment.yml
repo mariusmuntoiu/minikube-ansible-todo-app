@@ -59,9 +59,6 @@
           - software-properties-common
         state: present
 
-    - name: Update APT cache
-      apt:
-        update_cache: yes
 
     - name: Add Docker's official GPG key
       apt_key:
@@ -88,6 +85,10 @@
         state: started
         enabled: yes
 
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+
     - name: Install Minikube
       get_url:
         url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -100,6 +101,13 @@
         groups: docker
         append: yes
       become: yes
+        #notify: restart docker
+
+        #handlers:
+        #- name: restart docker
+        #service:
+        #name: docker
+        #state: restarted
 
     - name: Start Minikube
       command: minikube start --driver=docker
@@ -139,24 +147,37 @@
       register: post_install_helm_version
       failed_when: post_install_helm_version.rc != 0
 
-    - name: Ensure Helm repo for nginx-ingress is added
-      command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-      register: repo_added
-      changed_when: "'\"ingress-nginx\" has been added to your repositories' in repo_added.stdout"
+      # - name: Ensure Helm repo for nginx-ingress is added
+      # command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      # register: repo_added
+      #changed_when: "'\"ingress-nginx\" has been added to your repositories' in repo_added.stdout"
+
+    - name: Check if nginx-ingress is already installed
+      command: helm list -n default -f nginx-ingress
+      register: helm_list_nginx
+      changed_when: false
+      failed_when: false
+
+        # - name: Install nginx-ingress using Helm
+        #command: helm install nginx-ingress ingress-nginx/ingress-nginx --kubeconfig=/home/ansible/.kube/config
+        #register: helm_install
+        #changed_when: "'NAME: nginx-ingress-backup' in helm_install.stdout"
+        #when: "'nginx-ingress' not in helm_list_nginx.stdout"
 
     - name: Update Helm repo
       command: helm repo update
 
-    - name: Install nginx-ingress using Helm
-      command: helm install nginx-ingress ingress-nginx/ingress-nginx
-      register: helm_install
-      changed_when: "'NAME: nginx-ingress' in helm_install.stdout"
-      args:
-        creates: /etc/helm/namespace/ingress-nginx # This is a pseudo path. Helm doesn't create file-based indicators for installs.
+      # - name: Pause for 60 seconds to ensure ingress controller is ready
+      #pause:
+      #  seconds: 60
+
+      #    - name: Install nginx-ingress using Helm
+      # command: helm install nginx-ingress ingress-nginx/ingress-nginx --kubeconfig=/home/ansible/.kube/config
+      # register: helm_install 
+      #changed_when: "'NAME: nginx-ingress-backup' in helm_install.stdout"
+      #args:
+      #  creates: /etc/helm/namespace/ingress-nginx # This is a pseudo path. Helm doesn't create file-based indicators for installs.
       
-    - name: Pause for 60 seconds to ensure ingress controller is ready
-      pause:
-        seconds: 60
   
     - name: Deploy Todo Application
       k8s:
@@ -164,4 +185,48 @@
         src: /home/ansible/deployments-minikube/todo-app-full-deploy.yaml
         namespace: default
         apply: yes
-      
+    
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Create Nginx reverse proxy configuration
+      copy:
+        content: |
+          server {
+              listen 80;
+              server_name todoapp-ansible.dpdev.ch;
+
+              location / {
+                  proxy_pass http://192.168.49.2:31000; # Change the IP and port to your Minikube IP and nodePort
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+              }
+          }
+        dest: /etc/nginx/sites-available/reverse-proxy-ansible.conf
+
+    - name: Enable Nginx configuration
+      file:
+        src: /etc/nginx/sites-available/reverse-proxy-ansible.conf
+        dest: /etc/nginx/sites-enabled/reverse-proxy-ansible.conf
+        state: link
+
+    - name: Test Nginx configuration
+      command:
+        cmd: nginx -t
+      register: test_output
+      changed_when: false
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+
