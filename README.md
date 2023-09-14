@@ -433,7 +433,109 @@ Starts a Minikube cluster using the Docker driver. The command is run as the doc
   become_user: dockervm
 ```
 
-**18. Deploy Todo Application:**
+**18.Enable Ingress Addon in Minikube:**
+Activates the ingress controller for Minikube.
+
+
+```yml
+- name: Enable Ingress Addon in Minikube
+  command: minikube addons enable ingress
+  become: no
+```
+
+
+ **19.Check if Helm is already installed:**
+ Checks for the presence of Helm.
+
+ 
+```yml
+- name: Check if Helm is already installed
+  command: helm version --short
+  register: helm_version
+  failed_when: false
+  changed_when: false
+```
+
+**20.Download Helm binary:**
+ Downloads Helm if not installed
+ 
+
+```yml
+- name: Download Helm binary
+  get_url:
+    url: "https://get.helm.sh/helm-v3.7.0-linux-amd64.tar.gz" 
+    dest: "/tmp/helm-v3.7.0-linux-amd64.tar.gz"
+    mode: '0755'
+  when: helm_version.rc != 0
+ ```
+
+**21.Extract Helm tarball:**
+Extracts the Helm binary.
+
+
+```yml
+- name: Extract Helm tarball
+  unarchive:
+    src: "/tmp/helm-v3.7.0-linux-amd64.tar.gz"
+    dest: "/tmp"
+    remote_src: true
+  when: helm_version.rc != 0
+ ```
+
+**22.Move Helm binary to PATH:**
+Makes Helm available system-wide.
+
+
+```yml
+- name: Move Helm binary to PATH
+  command: mv /tmp/linux-amd64/helm /usr/local/bin/helm
+  when: helm_version.rc != 0
+```
+
+**23. Verify Helm Installation:**
+Confirms Helm is properly installed.
+
+
+```yml
+- name: Verify Helm Installation
+  command: helm version --short
+  register: post_install_helm_version
+  failed_when: post_install_helm_version.rc != 0
+```
+
+**24.Ensure Helm repo for nginx-ingress is added:**
+Adds the nginx-ingress Helm repository.
+
+
+```yml
+- name: Ensure Helm repo for nginx-ingress is added
+  command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+  register: repo_added
+  changed_when: "'\"ingress-nginx\" has been added to your repositories' in repo_added.stdout"
+```
+
+**25.Check if nginx-ingress is already installed:**
+Checks for the presence of the nginx-ingress Helm chart.
+
+
+```yml
+- name: Check if nginx-ingress is already installed
+  command: helm list -n ingress-nginx | grep ingress-nginx
+  register: nginx_ingress_installed
+  failed_when: false
+  changed_when: false
+```
+
+**26.Update Helm repo:**
+Updates the Helm repositories.
+
+
+```yml
+- name: Update Helm repo
+  command: helm repo update
+```
+
+**27. Deploy Todo Application:**
 Deploys a Todo Application to the Minikube cluster. This task applies the Kubernetes manifest located at /home/ansible/deployments-minikube/todo-app.yaml.
 
 ```yml
@@ -443,9 +545,83 @@ Deploys a Todo Application to the Minikube cluster. This task applies the Kubern
     src: /home/ansible/deployments-minikube/todo-app.yaml
     namespace: default
     apply: yes
+``` 
+
+**28.Install Nginx:**
+Installs the Nginx web server.
+
+
+```yml
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
 ```
 
- 
+**29.Get Minikube IP:**
+Retrieves the IP address of the Minikube cluster.
+
+
+```yml
+- name: Get Minikube IP
+  command: minikube ip
+  register: minikube_ip
+```yml
+
+
+**30.Get Service NodePort:**
+Fetches the NodePort of the Todo application's service.
+
+
+```yml
+- name: Get Service NodePort
+  command: kubectl get svc todo-app-service -o=jsonpath='{.spec.ports[0].nodePort}'
+  register: service_nodeport
+```
+
+
+**31.Create Nginx reverse proxy configuration:**
+Sets up Nginx to forward traffic to the Todo application.
+
+
+```yml
+    - name: Create Nginx reverse proxy configuration
+  template:
+    src: /path/to/nginx-todo-reverse-proxy.conf.j2
+    dest: /etc/nginx/conf.d/todo-reverse-proxy.conf
+```
+
+**32.Enable Nginx configuration:**
+Activates the newly created Nginx configuration.
+
+
+```yml
+- name: Enable Nginx configuration
+  command: ln -s /etc/nginx/sites-available/todo-reverse-proxy /etc/nginx/sites-enabled/
+```
+
+**33.Test Nginx configuration:**
+ Validates the Nginx configuration.
+
+
+```yml
+- name: Test Nginx configuration
+  command: nginx -t
+```
+
+**34.Restart Nginx:**
+Reloads Nginx to apply changes.
+
+
+```yml
+- name: Restart Nginx
+  systemd:
+    name: nginx
+    state: restarted
+```
+
+
+
 
 **STATUS/TODO:**
 
