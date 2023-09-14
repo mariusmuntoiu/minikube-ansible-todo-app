@@ -542,7 +542,7 @@ Deploys a Todo Application to the Minikube cluster. This task applies the Kubern
 - name: Deploy Todo Application
   k8s:
     kubeconfig: /home/ansible/.kube/config
-    src: /home/ansible/deployments-minikube/todo-app.yaml
+    src: /home/ansible/deployments-minikube/todo-app-full-deploy.yaml
     namespace: default
     apply: yes
 ``` 
