@@ -625,9 +625,6 @@ Reloads Nginx to apply changes.
 
 **STATUS/TODO:**
 
-I've modified the implementation, I'm now using Helm to install the nginx-ingress controller. There are some errors with the helm packages but I will keep debuging until I find a solution.
-
-Meanwhile, please feel free to review my implementation or to point out the causes that may lead to the Deploy Todo Application task to fail.
-
+Implement HTTPS/SSL - certbot Task
 
 
