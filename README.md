@@ -566,7 +566,7 @@ Retrieves the IP address of the Minikube cluster.
 - name: Get Minikube IP
   command: minikube ip
   register: minikube_ip
-```yml
+```
 
 
 **30.Get Service NodePort:**
