@@ -585,7 +585,7 @@ Sets up Nginx to forward traffic to the Todo application.
 
 
 ```yml
-    - name: Create Nginx reverse proxy configuration
+- name: Create Nginx reverse proxy configuration
   template:
     src: /path/to/nginx-todo-reverse-proxy.conf.j2
     dest: /etc/nginx/conf.d/todo-reverse-proxy.conf
