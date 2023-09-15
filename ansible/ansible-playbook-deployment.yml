@@ -84,6 +84,13 @@
         name: docker
         state: started
         enabled: yes
+        
+    - name: Add user to docker group
+      user:
+        name: vmuser
+        groups: docker
+        append: yes
+      become: yes
 
     - name: Update APT cache
       apt:
@@ -94,20 +101,6 @@
         url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
         dest: /usr/local/bin/minikube
         mode: '0755'
-
-    - name: Add user to docker group
-      user:
-        name: vmuser
-        groups: docker
-        append: yes
-      become: yes
-        #notify: restart docker
-
-        #handlers:
-        #- name: restart docker
-        #service:
-        #name: docker
-        #state: restarted
 
     - name: Start Minikube
       command: minikube start --driver=docker
@@ -147,10 +140,10 @@
       register: post_install_helm_version
       failed_when: post_install_helm_version.rc != 0
 
-      # - name: Ensure Helm repo for nginx-ingress is added
-      # command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-      # register: repo_added
-      #changed_when: "'\"ingress-nginx\" has been added to your repositories' in repo_added.stdout"
+    - name: Ensure Helm repo for nginx-ingress is added
+      command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      register: repo_added
+      changed_when: "'\"ingress-nginx\" has been added to your repositories' in repo_added.stdout"
 
     - name: Check if nginx-ingress is already installed
       command: helm list -n default -f nginx-ingress
@@ -167,18 +160,10 @@
     - name: Update Helm repo
       command: helm repo update
 
-      # - name: Pause for 60 seconds to ensure ingress controller is ready
-      #pause:
-      #  seconds: 60
+    - name: Pause for 60 seconds to ensure ingress controller is ready
+      pause:
+      seconds: 60
 
-      #    - name: Install nginx-ingress using Helm
-      # command: helm install nginx-ingress ingress-nginx/ingress-nginx --kubeconfig=/home/ansible/.kube/config
-      # register: helm_install 
-      #changed_when: "'NAME: nginx-ingress-backup' in helm_install.stdout"
-      #args:
-      #  creates: /etc/helm/namespace/ingress-nginx # This is a pseudo path. Helm doesn't create file-based indicators for installs.
-      
-  
     - name: Deploy Todo Application
       k8s:
         kubeconfig: /home/ansible/.kube/config
@@ -186,7 +171,6 @@
         namespace: default
         apply: yes
     
-
     - name: Update apt cache
       apt:
         update_cache: yes
@@ -196,15 +180,26 @@
         name: nginx
         state: present
 
+    - name: Get Minikube IP
+      command: minikube ip
+      register: minikube_ip_result
+      become: no
+
+    - name: Get Service NodePort
+      command: >
+        kubectl get service todo-app -n default -o=jsonpath='{.spec.ports[0].nodePort}'
+      register: service_nodeport_result
+      become: no
+
     - name: Create Nginx reverse proxy configuration
       copy:
         content: |
           server {
               listen 80;
-              server_name todoapp-ansible.dpdev.ch;
+              server_name mariusmuntoiu.com;
 
               location / {
-                  proxy_pass http://192.168.49.2:31000; # Change the IP and port to your Minikube IP and nodePort
+                  proxy_pass http://{{ minikube_ip_result.stdout }}:{{ service_nodeport_result.stdout }};
                   proxy_set_header Host $host;
                   proxy_set_header X-Real-IP $remote_addr;
                   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
