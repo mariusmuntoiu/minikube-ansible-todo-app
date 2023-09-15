@@ -182,14 +182,15 @@ spec:
 **todo-ingress**
 
 
-An Ingress resource that provides HTTP routing to the Todo web application. It allows external users to access the app using the hostname todo.local.
+An Ingress resource that provides HTTP routing to the Todo web application. It allows external users to access the app using the hostname mariusmuntoiu.com
 
 
 **Key Configurations:**
 
 
 Path: The ingress routes traffic for the path / to the todo-app service on port 3000.
-Rewrite Target Annotation: All requests are rewritten to / irrespective of the original path. This might be useful if the application expects all requests to hit the root path.
+Ingress resource is designed to route external traffic coming to "mariusmuntoiu.com" on any path starting with / to the todo-app service on port 3000 in the Kubernetes cluster. This is particularly useful when you have a domain that you want to point to a specific service within your minikube cluster, and that service is listening on a specific port.
+
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -197,7 +198,7 @@ kind: Ingress
 ...
 spec:
   rules:
-    - host: todo.local
+    - host: mariusmuntoiu.com
       http:
         paths:
           - path: /
@@ -626,9 +627,10 @@ Reloads Nginx to apply changes.
 **STATUS/TODO:**
 
 Find a better way to implement Helm Charts.
-Implement HTTPS/SSL - certbot Task 
+Implement HTTPS/SSL - certbot Task in Ansible playbook - For the purpose of the presentation, at the moment HTTPS for the ulr is configured on the server via certbot.
+
+
 
 **Conclusion:**
-
-Application works as expected. You can access it at: [http://mariusmuntoiu.com](url)
-
+Application works as expected. You can access it at: [https://mariusmuntoiu.com](url)
+Please feel free to review or contribute to my ansible-playbook exercise.
