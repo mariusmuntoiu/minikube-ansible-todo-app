@@ -632,5 +632,7 @@ Implement HTTPS/SSL - certbot Task in Ansible playbook - For the purpose of the 
 
 
 **Conclusion:**
-Application works as expected. You can access it at: [https://mariusmuntoiu.com](url)
+Application works as expected. You can access it at: https://mariusmuntoiu.com
+
+
 Please feel free to review or contribute to my ansible-playbook exercise.
