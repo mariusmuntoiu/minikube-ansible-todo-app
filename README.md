@@ -629,7 +629,7 @@ Reloads Nginx to apply changes.
 Helm Charts with ansible-playbook.
 
 
-Implement HTTPS/SSL - certbot Task in Ansible playbook - For the purpose of the presentation, at the moment HTTPS for the ulr is configured on the server via certbot.
+Implement HTTPS/SSL - certbot Task in Ansible playbook - For the purpose of the presentation, at the moment HTTPS for the URL is configured on the server via certbot. 
 
 
 
