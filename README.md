@@ -625,6 +625,10 @@ Reloads Nginx to apply changes.
 
 **STATUS/TODO:**
 
-Implement HTTPS/SSL - certbot Task
+Find a better way to implement Helm Charts.
+Implement HTTPS/SSL - certbot Task 
 
+**Conclusion:**
+
+Application works as expected. You can access it at: [http://mariusmuntoiu.com](url)
 
