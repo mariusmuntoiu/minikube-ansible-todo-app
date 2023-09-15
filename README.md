@@ -626,13 +626,18 @@ Reloads Nginx to apply changes.
 
 **STATUS/TODO:**
 
-Find a better way to implement Helm Charts.
+Helm Charts with ansible-playbook.
+
+
 Implement HTTPS/SSL - certbot Task in Ansible playbook - For the purpose of the presentation, at the moment HTTPS for the ulr is configured on the server via certbot.
 
 
 
 **Conclusion:**
 Application works as expected. You can access it at: https://mariusmuntoiu.com
+
+
+Use incoginito in your preferred browser in case the url does not work.
 
 
 Please feel free to review or contribute to my ansible-playbook exercise.
