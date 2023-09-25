@@ -151,12 +151,6 @@
       changed_when: false
       failed_when: false
 
-        # - name: Install nginx-ingress using Helm
-        #command: helm install nginx-ingress ingress-nginx/ingress-nginx --kubeconfig=/home/ansible/.kube/config
-        #register: helm_install
-        #changed_when: "'NAME: nginx-ingress-backup' in helm_install.stdout"
-        #when: "'nginx-ingress' not in helm_list_nginx.stdout"
-
     - name: Update Helm repo
       command: helm repo update
 
@@ -164,12 +158,13 @@
       pause:
       seconds: 60
 
-    - name: Deploy Todo Application
-      k8s:
+     - name: Deploy TODO Application
+      community.kubernetes.k8s:
         kubeconfig: /home/ansible/.kube/config
-        src: /home/ansible/deployments-minikube/todo-app-full-deploy.yaml
+        context: minikube
         namespace: default
         apply: yes
+        src: /home/ansible/deployments-minikube/todo-app-full-deploy.yaml
     
     - name: Update apt cache
       apt:
