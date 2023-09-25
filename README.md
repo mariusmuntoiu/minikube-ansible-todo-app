@@ -419,19 +419,19 @@ This gives the user vmuser permissions to run Docker commands without sudo.
 ```yml
 - name: Add user to docker group
   user:
-    name: dockervm
+    name: vmuser
     groups: docker
     append: yes
 ```
 
 **17. Start Minikube:**
-Starts a Minikube cluster using the Docker driver. The command is run as the dockervm user.
+Starts a Minikube cluster using the Docker driver. The command is run as the vmuser.
 
 ```yml
 - name: Start Minikube
   command: minikube start --driver=docker
   become: no
-  become_user: dockervm
+  become_user: vmuser
 ```
 
 **18.Enable Ingress Addon in Minikube:**
