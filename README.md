@@ -537,15 +537,16 @@ Updates the Helm repositories.
 ```
 
 **27. Deploy Todo Application:**
-Deploys a Todo Application to the Minikube cluster. This task applies the Kubernetes manifest located at /home/ansible/deployments-minikube/todo-app.yaml.
+Deploys a Todo Application to the Minikube cluster. This task applies the Kubernetes manifest located at /home/ansible/deployments-minikube/todo-app-full-deploy.yaml.
 
 ```yml
-- name: Deploy Todo Application
-  k8s:
-    kubeconfig: /home/ansible/.kube/config
-    src: /home/ansible/deployments-minikube/todo-app-full-deploy.yaml
-    namespace: default
-    apply: yes
+ - name: Deploy TODO Application
+      community.kubernetes.k8s:
+        kubeconfig: /home/ansible/.kube/config
+        context: minikube
+        namespace: default
+        apply: yes
+        src: /home/ansible/deployments-minikube/todo-app-full-deploy.yaml
 ``` 
 
 **28.Install Nginx:**
