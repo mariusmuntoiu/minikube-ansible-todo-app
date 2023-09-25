@@ -3,9 +3,9 @@
 Using Ansible playbook, set up a single Node Kubernetes cluster into a Virtual Machine to deploy the full stack of the complete "TODO" application provided by Docker in the following tutorial:
 https://docs.docker.com/get-started/02_our_app/
 
-In order to set up a singe Node Kubernetes cluster we can use **Minikube**:
+In order to set up a single Node Kubernetes cluster we can use **Minikube**:
 
-Minikube is an open-source tool that allows you to run Kubernetes (K8s) locally. It sets up a single-node Kubernetes cluster on your personal computer so you can test, develop, and experiment with Kubernetes applications without needing a larger, potentially costly, cluster.
+Minikube is an open-source tool that allows us to run Kubernetes (K8s) locally. It sets up a single-node Kubernetes cluster on our personal computer so we can test, develop, and experiment with Kubernetes applications without needing a larger, potentially costly, cluster.
 
 
 Let's break down the configuration files in this repository starting with the deployment files:
