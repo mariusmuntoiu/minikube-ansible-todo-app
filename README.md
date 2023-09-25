@@ -215,7 +215,7 @@ I've divided the main deployment file **to-do-app-full-deploy.yaml** for better 
 
 
 This setup ensures data persistence for Redis, scalable deployment for the web application, internal communication via services, and external access via a LoadBalancer and Ingress. 
-Remember to map the domain (todo.local) to the appropriate IP address in your environment (e.g., /etc/hosts or DNS) for external access.
+Remember to map the domain ("your-domain.com") to the appropriate IP address in your environment (e.g., /etc/hosts or DNS) for external access.
 
 Now let's break down the Ansible Playbook
 
